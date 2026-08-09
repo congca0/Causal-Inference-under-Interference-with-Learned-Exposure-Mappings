@@ -1,16 +1,11 @@
-```r
-# ============================================================
-# LOAD RESULTS
-# ============================================================
+ 
 
 library(tidyverse)
 library(gridExtra)
 
 set.seed(123)
 
-# ------------------------------------------------------------
-# Operators
-# ------------------------------------------------------------
+ 
 
 T_true <- as.matrix(
   read.csv("T_true.csv")
@@ -28,9 +23,7 @@ T_gaussian <- as.matrix(
   read.csv("T_gaussian.csv")
 )
 
-# ------------------------------------------------------------
-# Metrics
-# ------------------------------------------------------------
+ 
 
 field_metrics <- read.csv(
   "field_metrics.csv"
@@ -47,4 +40,4 @@ spillover_results <- read.csv(
 print(field_metrics)
 print(operator_metrics)
 print(spillover_results)
-```
+ 

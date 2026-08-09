@@ -1,21 +1,4 @@
-# =====================================================
-# COMPLETE ROBUST GAUSSIAN SPILLOVER PIPELINE
-#
-# GOAL:
-# benchmark isotropic Gaussian spillover
-# for PM2.5 spatiotemporal dynamics
-#
-# INCLUDES:
-#
-# 1. robust panel handling
-# 2. Gaussian spillover construction
-# 3. temporal lag model
-# 4. spillover model
-# 5. AIC comparison
-# 6. VIF diagnostics
-# 7. Moran's I residual diagnostics
-#
-# =====================================================
+ 
 
 library(dplyr)
 
@@ -32,20 +15,13 @@ library(geosphere)
 library(car)
 
 library(spdep)
-
-# =====================================================
-# STEP 0
-# CLEAN DATA
-# =====================================================
+ 
 
 merged_data <- merged_data %>%
   
   clean_names()
 
-# =====================================================
-# STEP 1
-# NUMERIC CONVERSION
-# =====================================================
+ 
 
 numeric_vars <- c(
   
@@ -76,11 +52,7 @@ merged_data <- merged_data %>%
       )
     )
   )
-
-# =====================================================
-# STEP 2
-# CREATE TEMPORAL LAGS
-# =====================================================
+ 
 
 merged_data <- merged_data %>%
   
@@ -100,10 +72,7 @@ merged_data <- merged_data %>%
   
   ungroup()
 
-# =====================================================
-# STEP 3
-# CHECK PANEL
-# =====================================================
+ 
 
 cat(
   "merged_data rows:",
@@ -124,17 +93,7 @@ panel_check <- merged_data %>%
 
 print(panel_check)
 
-# =====================================================
-# STEP 4
-# COUNTY COORDINATES
-#
-# county_coords must contain:
-#
-# county_name
-# latitude
-# longitude
-#
-# =====================================================
+ 
 
 county_coords <- county_coords %>%
   
@@ -147,10 +106,7 @@ county_coords <- county_coords %>%
     .keep_all = TRUE
   )
 
-# =====================================================
-# STEP 5
-# KEEP COMMON COUNTIES
-# =====================================================
+ 
 
 common_counties <- intersect(
   
@@ -173,10 +129,7 @@ county_coords <- county_coords %>%
       common_counties
   )
 
-# =====================================================
-# STEP 6
-# FIXED COUNTY ORDER
-# =====================================================
+ 
 
 county_coords <- county_coords %>%
   
@@ -186,10 +139,7 @@ county_coords <- county_coords %>%
 
 county_levels <- county_coords$county_name
 
-# =====================================================
-# STEP 7
-# DISTANCE MATRIX
-# =====================================================
+ 
 
 coords_matrix <- county_coords %>%
   
@@ -214,19 +164,13 @@ rownames(distance_matrix) <- county_levels
 
 colnames(distance_matrix) <- county_levels
 
-# =====================================================
-# STEP 8
-# VISUALIZE DISTANCE MATRIX
-# =====================================================
+ 
 
 image(distance_matrix)
 
 title("County Distance Matrix")
 
-# =====================================================
-# STEP 9
-# GAUSSIAN KERNEL
-# =====================================================
+ 
 
 sigma <- 100
 
@@ -239,10 +183,7 @@ gaussian_kernel <- exp(
 
 diag(gaussian_kernel) <- 0
 
-# =====================================================
-# STEP 10
-# PANEL DATA
-# =====================================================
+ 
 
 panel_data <- merged_data %>%
   
@@ -251,10 +192,7 @@ panel_data <- merged_data %>%
     county_name
   )
 
-# =====================================================
-# STEP 11
-# GAUSSIAN SPILLOVER
-# =====================================================
+ 
 
 unique_dates <- sort(
   unique(panel_data$date_local)
@@ -270,9 +208,7 @@ for(d in unique_dates){
     "\n"
   )
   
-  # --------------------------------------------------
-  # SINGLE DAY
-  # --------------------------------------------------
+ 
   
   day_data <- panel_data %>%
     
@@ -280,9 +216,7 @@ for(d in unique_dates){
       date_local == d
     )
   
-  # --------------------------------------------------
-  # COMPLETE COUNTY SET
-  # --------------------------------------------------
+ 
   
   day_data <- tibble(
     
@@ -297,9 +231,7 @@ for(d in unique_dates){
       by = "county_name"
     )
   
-  # --------------------------------------------------
-  # FIX ORDER
-  # --------------------------------------------------
+ 
   
   day_data$county_name <- factor(
     
@@ -314,9 +246,7 @@ for(d in unique_dates){
       county_name
     )
   
-  # --------------------------------------------------
-  # VALIDATE ORDER
-  # --------------------------------------------------
+ 
   
   stopifnot(
     
@@ -326,21 +256,14 @@ for(d in unique_dates){
     )
   )
   
-  # --------------------------------------------------
-  # PM VECTOR
-  # --------------------------------------------------
+ 
   
   pm_vector <- day_data$pm25
   
-  # --------------------------------------------------
-  # OBSERVED COUNTIES
-  # --------------------------------------------------
-  
+ 
   valid_idx <- !is.na(pm_vector)
   
-  # --------------------------------------------------
-  # SUBSET KERNEL
-  # --------------------------------------------------
+ 
   
   sub_kernel <- gaussian_kernel[
     ,
@@ -351,9 +274,7 @@ for(d in unique_dates){
     valid_idx
   ]
   
-  # --------------------------------------------------
-  # ROW NORMALIZATION
-  # --------------------------------------------------
+ 
   
   row_weights <- rowSums(
     sub_kernel
@@ -363,9 +284,7 @@ for(d in unique_dates){
     row_weights == 0
   ] <- NA
   
-  # --------------------------------------------------
-  # SPILLOVER
-  # --------------------------------------------------
+ 
   
   spillover <- (
     
@@ -374,9 +293,7 @@ for(d in unique_dates){
     
   ) / row_weights
   
-  # --------------------------------------------------
-  # SAVE
-  # --------------------------------------------------
+ 
   
   day_data$gaussian_spillover <- as.numeric(
     spillover
@@ -385,10 +302,7 @@ for(d in unique_dates){
   spillover_results[[as.character(d)]] <- day_data
 }
 
-# =====================================================
-# STEP 12
-# FINAL DATASET
-# =====================================================
+ 
 
 spillover_data <- bind_rows(
   spillover_results
@@ -400,10 +314,7 @@ cat(
   "\n"
 )
 
-# =====================================================
-# STEP 13
-# MODEL DATA
-# =====================================================
+ 
 
 model_data <- spillover_data %>%
   
@@ -428,20 +339,13 @@ cat(
   "\n"
 )
 
-# =====================================================
-# STEP 14
-# MISSINGNESS
-# =====================================================
+ 
 
 colSums(
   is.na(model_data)
 )
 
-# =====================================================
-# STEP 15
-# CORRELATION MATRIX
-# =====================================================
-
+ 
 cor_matrix <- model_data %>%
   
   select(
@@ -465,11 +369,7 @@ cor_matrix <- model_data %>%
 
 print(cor_matrix)
 
-# =====================================================
-# STEP 16
-# SCATTERPLOT
-# =====================================================
-
+ 
 ggplot(
   model_data,
   
@@ -486,11 +386,7 @@ ggplot(
   ) +
   
   theme_bw()
-
-# =====================================================
-# STEP 17
-# BASELINE MODEL
-# =====================================================
+ 
 
 baseline_model <- lm(
   
@@ -509,10 +405,7 @@ baseline_model <- lm(
 
 summary(baseline_model)
 
-# =====================================================
-# STEP 18
-# SPILLOVER MODEL
-# =====================================================
+ 
 
 spillover_model <- lm(
   
@@ -533,36 +426,24 @@ spillover_model <- lm(
 
 summary(spillover_model)
 
-# =====================================================
-# STEP 19
-# MODEL COMPARISON
-# =====================================================
+ 
 
 AIC(
   baseline_model,
   spillover_model
 )
 
-# =====================================================
-# STEP 20
-# VIF
-# =====================================================
+ 
 
 vif(spillover_model)
 
-# =====================================================
-# STEP 21
-# RESIDUALS
-# =====================================================
+ 
 
 model_data$residuals <- residuals(
   spillover_model
 )
 
-# =====================================================
-# STEP 22
-# MORAN'S I BY DATE
-# =====================================================
+ 
 
 moran_results <- list()
 
@@ -574,9 +455,7 @@ for(d in unique(model_data$date_local)){
     "\n"
   )
   
-  # --------------------------------------------------
-  # SINGLE DAY
-  # --------------------------------------------------
+ 
   
   day_df <- model_data %>%
     
@@ -588,18 +467,14 @@ for(d in unique(model_data$date_local)){
       county_name
     )
   
-  # --------------------------------------------------
-  # SKIP SMALL DAYS
-  # --------------------------------------------------
+ 
   
   if(nrow(day_df) < 5){
     
     next
   }
   
-  # --------------------------------------------------
-  # MATCH INDICES
-  # --------------------------------------------------
+ 
   
   idx <- match(
     
@@ -608,17 +483,13 @@ for(d in unique(model_data$date_local)){
     county_levels
   )
   
-  # --------------------------------------------------
-  # SUBSET COORDS
-  # --------------------------------------------------
+ 
   
   coords_sub <- coords_matrix[
     idx,
   ]
   
-  # --------------------------------------------------
-  # DAY-SPECIFIC NEIGHBORS
-  # --------------------------------------------------
+ 
   
   neighbors_sub <- knn2nb(
     
@@ -629,9 +500,7 @@ for(d in unique(model_data$date_local)){
       k = 4
     )
   )
-  # --------------------------------------------------
-  # DAY-SPECIFIC WEIGHTS
-  # --------------------------------------------------
+ 
   
   weights_sub <- nb2listw(
     
@@ -641,10 +510,7 @@ for(d in unique(model_data$date_local)){
     
    )
   
-  # --------------------------------------------------
-  # MORAN'S I
-  # --------------------------------------------------
-  
+ 
   moran_out <- moran.test(
     
     day_df$residuals,
@@ -654,9 +520,8 @@ for(d in unique(model_data$date_local)){
     zero.policy = TRUE
   )
   
-  # --------------------------------------------------
-  # SAVE
-  # --------------------------------------------------
+ 
+ 
   
   moran_results[[as.character(d)]] <- tibble(
     
@@ -678,10 +543,7 @@ for(d in unique(model_data$date_local)){
   )
 }
 
-# =====================================================
-# STEP 23
-# FINAL MORAN RESULTS
-# =====================================================
+ 
 
 moran_results <- bind_rows(
   moran_results
@@ -689,10 +551,7 @@ moran_results <- bind_rows(
 
 print(moran_results)
 
-# =====================================================
-# STEP 24
-# SUMMARY
-# =====================================================
+ 
 
 summary(
   moran_results$moran_I
@@ -702,20 +561,12 @@ summary(
   moran_results$p_value
 )
 
-# =====================================================
-# STEP 25
-# FRACTION SIGNIFICANT
-# =====================================================
-
+ 
 mean(
   moran_results$p_value < 0.05,
   na.rm = TRUE
 )
-
-# =====================================================
-# STEP 26
-# VISUALIZE MORAN'S I
-# =====================================================
+ 
 
 ggplot(
   moran_results,
@@ -731,14 +582,5 @@ ggplot(
   geom_point() +
   
   theme_bw()
-
-# =====================================================
-# INTERPRETATION
-#
-# If residual Moran's I remains positive/significant:
-#
-# isotropic Gaussian smoothing
-# does NOT fully capture
-# PM2.5 transport dynamics.
-#
-# =====================================================
+ 
+ 

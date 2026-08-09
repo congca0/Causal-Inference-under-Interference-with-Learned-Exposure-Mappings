@@ -1,8 +1,4 @@
-```r
-# ============================================================
-# EXPERIMENT 1
-# Sparse Monitoring Identifiability
-# ============================================================
+ 
 
 monitor_levels <- c(
   200,
@@ -73,4 +69,4 @@ write.csv(
   "results_sparse.csv",
   row.names = FALSE
 )
-```
+ 

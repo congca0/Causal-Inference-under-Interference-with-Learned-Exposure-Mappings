@@ -1,7 +1,4 @@
-# =====================================================
-# GAUSSIAN SPILLOVER BENCHMARK
-# FULL RESULTS PIPELINE
-# =====================================================
+ 
 
 library(dplyr)
 
@@ -19,9 +16,7 @@ library(car)
 
 library(broom)
 
-# =====================================================
-# RESULTS STORAGE
-# =====================================================
+ 
 
 results_table <- data.frame()
 
@@ -29,24 +24,17 @@ coef_table <- data.frame()
 
 model_list <- list()
 
-# =====================================================
-# STEP 0
-# CLEAN DATA
-# =====================================================
+ 
 
 merged_data <- merged_data %>%
   
   clean_names()
 
-# -----------------------------------------------------
-# CHECK STRUCTURE
-# -----------------------------------------------------
+ 
 
 str(merged_data)
 
-# -----------------------------------------------------
-# NUMERIC CONVERSION
-# -----------------------------------------------------
+ 
 
 numeric_vars <- c(
   
@@ -78,24 +66,9 @@ merged_data <- merged_data %>%
     )
   )
 
-# -----------------------------------------------------
-# CHECK MISSINGNESS
-# -----------------------------------------------------
+ 
 
-cat(
-  
-  "\n=============================\n"
-)
-
-cat(
-  
-  "MISSINGNESS\n"
-)
-
-cat(
-  
-  "=============================\n"
-)
+ 
 
 print(
   colSums(
@@ -103,11 +76,7 @@ print(
   )
 )
 
-# =====================================================
-# STEP 1
-# CREATE TEMPORAL LAGS
-# =====================================================
-
+ 
 merged_data <- merged_data %>%
   
   arrange(
@@ -126,10 +95,7 @@ merged_data <- merged_data %>%
   
   ungroup()
 
-# =====================================================
-# STEP 2
-# COUNTY COORDINATES
-# =====================================================
+ 
 
 county_coords <- county_coords %>%
   
@@ -138,10 +104,7 @@ county_coords <- county_coords %>%
     .keep_all = TRUE
   )
 
-# =====================================================
-# STEP 3
-# COMMON COUNTIES
-# =====================================================
+ 
 
 common_counties <- intersect(
   
@@ -164,10 +127,7 @@ county_coords <- county_coords %>%
       common_counties
   )
 
-# =====================================================
-# STEP 4
-# FIXED COUNTY ORDER
-# =====================================================
+ 
 
 county_coords <- county_coords %>%
   
@@ -180,10 +140,7 @@ county_levels <- sort(
   )
 )
 
-# =====================================================
-# STEP 5
-# DISTANCE MATRIX
-# =====================================================
+ 
 
 coords_matrix <- county_coords %>%
   
@@ -207,10 +164,7 @@ rownames(distance_matrix) <- county_coords$county_name
 
 colnames(distance_matrix) <- county_coords$county_name
 
-# =====================================================
-# STEP 6
-# GAUSSIAN KERNEL
-# =====================================================
+ 
 
 sigma <- 100
 
@@ -223,10 +177,7 @@ gaussian_kernel <- exp(
 
 diag(gaussian_kernel) <- 0
 
-# =====================================================
-# STEP 7
-# PANEL DATA
-# =====================================================
+ 
 
 panel_data <- merged_data %>%
   
@@ -242,10 +193,7 @@ unique_dates <- sort(
 
 spillover_results <- list()
 
-# =====================================================
-# STEP 8
-# SPILLOVER LOOP
-# =====================================================
+ 
 
 for(d in unique_dates){
   
@@ -331,10 +279,7 @@ for(d in unique_dates){
   spillover_results[[as.character(d)]] <- day_data
 }
 
-# =====================================================
-# STEP 9
-# FINAL DATA
-# =====================================================
+ 
 
 spillover_data <- bind_rows(
   spillover_results
@@ -349,10 +294,7 @@ cat(
   "\n"
 )
 
-# =====================================================
-# STEP 10
-# MODEL DATA
-# =====================================================
+ 
 
 model_data <- spillover_data %>%
   
@@ -380,10 +322,7 @@ cat(
   "\n"
 )
 
-# =====================================================
-# STEP 11
-# CORRELATION MATRIX
-# =====================================================
+ 
 
 cor_matrix <- model_data %>%
   
@@ -406,20 +345,13 @@ cor_matrix <- model_data %>%
     use = "complete.obs"
   )
 
-cat(
-  
-  "\n=============================\n"
-)
-
+ 
 cat(
   
   "CORRELATION MATRIX\n"
 )
 
-cat(
-  
-  "=============================\n"
-)
+ 
 
 print(cor_matrix)
 
@@ -430,10 +362,7 @@ write.csv(
   "correlation_matrix.csv"
 )
 
-# =====================================================
-# STEP 12
-# BASELINE MODEL
-# =====================================================
+ 
 
 baseline_model <- lm(
   
@@ -453,10 +382,7 @@ baseline_model <- lm(
 summary(baseline_model)
 
 model_list[["baseline_model"]] <- baseline_model
-
-# -----------------------------------------------------
-# SAVE METRICS
-# -----------------------------------------------------
+ 
 
 baseline_metrics <- data.frame(
   
@@ -489,9 +415,7 @@ results_table <- bind_rows(
   baseline_metrics
 )
 
-# -----------------------------------------------------
-# SAVE COEFFICIENTS
-# -----------------------------------------------------
+ 
 
 baseline_coef <- broom::tidy(
   
@@ -509,10 +433,7 @@ coef_table <- bind_rows(
   baseline_coef
 )
 
-# =====================================================
-# STEP 13
-# SPILLOVER MODEL
-# =====================================================
+ 
 
 spillover_model <- lm(
   
@@ -535,9 +456,7 @@ summary(spillover_model)
 
 model_list[["spillover_model"]] <- spillover_model
 
-# -----------------------------------------------------
-# SAVE METRICS
-# -----------------------------------------------------
+ 
 
 spillover_metrics <- data.frame(
   
@@ -570,9 +489,7 @@ results_table <- bind_rows(
   spillover_metrics
 )
 
-# -----------------------------------------------------
-# SAVE COEFFICIENTS
-# -----------------------------------------------------
+ 
 
 spillover_coef <- broom::tidy(
   
@@ -589,11 +506,7 @@ coef_table <- bind_rows(
   
   spillover_coef
 )
-
-# =====================================================
-# STEP 14
-# AIC COMPARISON
-# =====================================================
+ 
 
 aic_table <- AIC(
   
@@ -613,29 +526,20 @@ write.csv(
   row.names = FALSE
 )
 
-# =====================================================
-# STEP 15
-# VIF
-# =====================================================
+ 
 
 vif_results <- vif(
   spillover_model
 )
 
-cat(
-  
-  "\n=============================\n"
-)
+ 
 
 cat(
   
   "VIF RESULTS\n"
 )
 
-cat(
-  
-  "=============================\n"
-)
+ 
 
 print(vif_results)
 
@@ -646,10 +550,7 @@ write.csv(
   "vif_results.csv"
 )
 
-# =====================================================
-# STEP 16
-# PREDICTIONS
-# =====================================================
+ 
 
 model_data$predicted_pm25 <- predict(
   
@@ -661,10 +562,7 @@ model_data$residuals <- residuals(
   spillover_model
 )
 
-# =====================================================
-# STEP 17
-# OBSERVED VS PREDICTED
-# =====================================================
+ 
 
 fig_obs_pred <- ggplot(
   
@@ -697,10 +595,7 @@ fig_obs_pred <- ggplot(
 
 print(fig_obs_pred)
 
-# =====================================================
-# STEP 18
-# RESIDUAL HISTOGRAM
-# =====================================================
+ 
 
 fig_resid <- ggplot(
   
@@ -726,10 +621,7 @@ fig_resid <- ggplot(
 
 print(fig_resid)
 
-# =====================================================
-# STEP 19
-# SAVE FIGURES
-# =====================================================
+ 
 
 ggsave(
   
@@ -753,10 +645,7 @@ ggsave(
   height=6
 )
 
-# =====================================================
-# STEP 20
-# SAVE TABLES
-# =====================================================
+ 
 
 write.csv(
   
@@ -785,59 +674,35 @@ write.csv(
   row.names = FALSE
 )
 
-# =====================================================
-# STEP 21
-# FINAL PRINT
-# =====================================================
+ 
 
-cat(
-  
-  "\n=====================================\n"
-)
-
+ 
 cat(
   
   "FINAL MODEL RESULTS\n"
 )
 
-cat(
-  
-  "=====================================\n"
-)
+ 
 
 print(results_table)
 
-cat(
-  
-  "\n=====================================\n"
-)
-
+ 
 cat(
   
   "COEFFICIENTS\n"
 )
 
-cat(
-  
-  "=====================================\n"
-)
+ 
 
 print(coef_table)
 
-cat(
-  
-  "\n=====================================\n"
-)
-
+ 
 cat(
   
   "FINAL SAMPLE SIZES\n"
 )
 
-cat(
-  
-  "=====================================\n"
-)
+ 
 
 cat(
   
@@ -879,7 +744,4 @@ cat(
   
   "\nALL RESULTS SAVED\n"
 )
-
-# =====================================================
-# END
-# =====================================================
+ 

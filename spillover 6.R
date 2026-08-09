@@ -1,21 +1,4 @@
-# =====================================================
-# FIXED VERSION
-#
-# YOU HAD A SYNTAX ERROR:
-#
-# WRONG:
-# spillover_results[
-#   [as.character(d)]
-#
-# CORRECT:
-# spillover_results[[as.character(d)]] <- day_data
-#
-# =====================================================
-
-# =====================================================
-# STEP 1
-# SIGMA SENSITIVITY ANALYSIS
-# =====================================================
+ 
 
 sigma_grid <- c(
   25,
@@ -37,9 +20,7 @@ for(sig in sigma_grid){
     "\n"
   )
   
-  # --------------------------------------------------
-  # GAUSSIAN KERNEL
-  # --------------------------------------------------
+ 
   
   gaussian_kernel <- exp(
     
@@ -50,9 +31,7 @@ for(sig in sigma_grid){
   
   diag(gaussian_kernel) <- 0
   
-  # --------------------------------------------------
-  # BUILD SPILLOVER
-  # --------------------------------------------------
+ 
   
   spillover_results <- list()
   
@@ -120,17 +99,12 @@ for(sig in sigma_grid){
       spillover
     )
     
-    # =================================================
-    # CORRECT LIST ASSIGNMENT
-    # =================================================
+ 
     
     spillover_results[[as.character(d)]] <- day_data
     
-  }   # END DATE LOOP
-  
-  # --------------------------------------------------
-  # COMBINE
-  # --------------------------------------------------
+  }  
+ 
   
   sigma_data <- bind_rows(
     spillover_results
@@ -153,9 +127,7 @@ for(sig in sigma_grid){
       !is.na(spillover)
     )
   
-  # --------------------------------------------------
-  # MODEL
-  # --------------------------------------------------
+ 
   
   fit <- lm(
     
@@ -195,9 +167,7 @@ for(sig in sigma_grid){
   
 }   # END SIGMA LOOP
 
-# =====================================================
-# FINAL RESULTS
-# =====================================================
+ 
 
 sigma_results <- bind_rows(
   sigma_results
@@ -205,9 +175,7 @@ sigma_results <- bind_rows(
 
 print(sigma_results)
 
-# =====================================================
-# VISUALIZE
-# =====================================================
+ 
 ggplot(
   sigma_results,
   

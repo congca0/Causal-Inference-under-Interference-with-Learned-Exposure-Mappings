@@ -1,8 +1,4 @@
-# =====================================================
-# FINAL PAPER 1 PIPELINE
-# TWO-WAY FIXED EFFECTS + DIAGNOSTICS
-# =====================================================
-
+ 
 library(dplyr)
 
 library(ggplot2)
@@ -19,10 +15,7 @@ library(modelsummary)
 
 library(patchwork)
 
-# =====================================================
-# STEP 1
-# TWO-WAY FIXED EFFECTS MODEL
-# =====================================================
+ 
 model_data$gaussian_spillover <- as.numeric(
        
       model_data$gaussian_spillover
@@ -49,11 +42,7 @@ two_way_fe_model <- lm(
 summary(
   two_way_fe_model
 )
-
-# =====================================================
-# STEP 2
-# CLUSTER-ROBUST STANDARD ERRORS
-# =====================================================
+ 
 
 robust_results <- coeftest(
   
@@ -73,11 +62,7 @@ print(
   robust_results
 )
 
-# =====================================================
-# STEP 3
-# SAVE PREDICTIONS + RESIDUALS
-# =====================================================
-
+ 
 model_data$predicted <- predict(
   
   two_way_fe_model
@@ -87,11 +72,7 @@ model_data$residuals <- residuals(
   
   two_way_fe_model
 )
-
-# =====================================================
-# STEP 4
-# BASIC DIAGNOSTICS
-# =====================================================
+ 
 
 par(
   mfrow = c(2,2)
@@ -100,11 +81,8 @@ par(
 plot(
   two_way_fe_model
 )
-
-# =====================================================
-# STEP 5
-# RESIDUAL HISTOGRAM
-# =====================================================
+ 
+ 
 
 fig_resid_hist <- ggplot(
   
@@ -136,10 +114,7 @@ print(
   fig_resid_hist
 )
 
-# =====================================================
-# STEP 6
-# OBSERVED VS PREDICTED
-# =====================================================
+ 
 
 fig_obs_pred <- ggplot(
   
@@ -181,10 +156,7 @@ print(
   fig_obs_pred
 )
 
-# =====================================================
-# STEP 7
-# RESIDUALS VS FITTED
-# =====================================================
+ 
 
 fig_resid_fit <- ggplot(
   
@@ -228,10 +200,7 @@ print(
   fig_resid_fit
 )
 
-# =====================================================
-# STEP 8
-# COUNTY-LEVEL RMSE
-# =====================================================
+ 
 
 county_residuals <- model_data %>%
   
@@ -260,11 +229,7 @@ print(
   county_residuals
 )
 
-# =====================================================
-# STEP 9
-# COUNTY RMSE FIGURE
-# =====================================================
-
+ 
 fig_county_rmse <- ggplot(
   
   county_residuals,
@@ -301,10 +266,7 @@ print(
   fig_county_rmse
 )
 
-# =====================================================
-# STEP 10
-# MORAN'S I
-# =====================================================
+ 
 
 moran_results <- list()
 
@@ -391,10 +353,7 @@ for(d in unique(model_data$date_local)){
       moran_out$p.value
   )
 
-# =====================================================
-# STEP 11
-# FINAL MORAN RESULTS
-# =====================================================
+ 
 
 moran_results <- bind_rows(
   moran_results
@@ -404,11 +363,7 @@ print(
   moran_results
 )
 
-# =====================================================
-# STEP 12
-# FRACTION SIGNIFICANT
-# =====================================================
-
+ 
 fraction_sig <- mean(
   
   moran_results$p_value < 0.05,
@@ -420,11 +375,7 @@ print(
   fraction_sig
 )
 
-# =====================================================
-# STEP 13
-# MORAN FIGURE
-# =====================================================
-
+ 
 fig_moran <- ggplot(
   
   moran_results,
@@ -470,10 +421,7 @@ print(
   fig_moran
 )
 
-# =====================================================
-# STEP 14
-# MODEL SUMMARY TABLE
-# =====================================================
+ 
 
 summary_table <- tibble(
   
@@ -515,10 +463,7 @@ print(
   summary_table
 )
 
-# =====================================================
-# STEP 15
-# MODEL SUMMARY EXPORT
-# =====================================================
+ 
 
 modelsummary(
   
@@ -540,11 +485,7 @@ modelsummary(
   output =
     "modelsummary.html"
 )
-
-# =====================================================
-# STEP 16
-# COEFFICIENT PLOT
-# =====================================================
+ 
 
 coef_df <- tidy(
   
@@ -615,10 +556,7 @@ print(
   fig_coef
 )
 
-# =====================================================
-# STEP 17
-# SAVE FIGURES
-# =====================================================
+ 
 
 ggsave(
   
@@ -686,10 +624,7 @@ ggsave(
   height = 6
 )
 
-# =====================================================
-# STEP 18
-# EXPORT TABLES
-# =====================================================
+ 
 
 write.csv(
   
@@ -718,10 +653,7 @@ write.csv(
   row.names = FALSE
 )
 
-# =====================================================
-# STEP 19
-# EXPORT FINAL DATA
-# =====================================================
+ 
 
 export_data <- model_data %>%
   
@@ -755,25 +687,15 @@ write.csv(
   row.names = FALSE
 )
 
-# =====================================================
-# STEP 20
-# FINAL SUMMARY
-# =====================================================
+ 
 
-cat(
-  
-  "\n=============================\n"
-)
-
+ 
 cat(
   
   "FINAL PAPER 1 RESULTS\n"
 )
 
-cat(
-  
-  "=============================\n"
-)
+ 
 
 cat(
   

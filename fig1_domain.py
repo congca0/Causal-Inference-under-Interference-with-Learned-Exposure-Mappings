@@ -1,4 +1,4 @@
-"""fig1_domain.py — simulation geography and fitted exposure mappings (one replicate)."""
+ 
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")

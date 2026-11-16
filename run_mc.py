@@ -1,4 +1,4 @@
-"""
+
 run_mc.py — Monte Carlo driver.
 
 For each transport-data replicate r (new winds, daily emissions, monitor
@@ -14,7 +14,7 @@ noise) and each scenario (A: AD-PDE class correct; B: no candidate correct):
   5. store design-stage diagnostics (computed without outcomes).
 
 Usage:  python run_mc.py START STOP      (replicate indices, saves results/rep_XXX.pkl)
-"""
+ 
 import sys, os, pickle, time
 import numpy as np
 from transport_sim import (make_geography, draw_days, truth, observe, PDEModel,

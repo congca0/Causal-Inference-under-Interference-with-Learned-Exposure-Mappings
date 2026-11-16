@@ -1,7 +1,7 @@
-"""
+ 
 analyze.py — summarize Monte Carlo results into tables (CSV) and figures (PNG).
 Usage: python analyze.py   (reads results/rep_*.pkl, writes out/)
-"""
+ 
 import glob, os, pickle, json
 import numpy as np
 import pandas as pd
@@ -32,7 +32,7 @@ def cover(lo, hi):
     return ((lo <= BETA) & (BETA <= hi)).mean()
 
 
-# ---------------------------------------------------------------- Table 1
+#    Table 1
 rows = []
 for sc in "AB":
     for m in names:
@@ -41,7 +41,7 @@ for sc in "AB":
 t1 = pd.DataFrame(rows)
 t1.to_csv(f"{OUT}/table1_prediction.csv", index=False)
 
-# ---------------------------------------------------------------- Table 2
+#    Table 2
 rows = []
 for sc in "AB":
     for p in policies:
@@ -66,7 +66,7 @@ for sc in "AB":
 t2 = pd.DataFrame(rows)
 t2.to_csv(f"{OUT}/table2_estimation.csv", index=False)
 
-# ---------------------------------------------------------------- Table 3: interval methods
+#    Table 3: interval methods
 rows = []
 sel_freq = {}
 screen_freq = {}
@@ -110,7 +110,7 @@ t3.to_csv(f"{OUT}/table3_intervals.csv", index=False)
 json.dump({f"{k[0]}|{k[1]}": v for k, v in sel_freq.items()}, open(f"{OUT}/selection_freq.json", "w"), indent=1)
 json.dump({f"{k[0]}|{k[1]}": v for k, v in screen_freq.items()}, open(f"{OUT}/screen_freq.json", "w"), indent=1)
 
-# ---------------------------------------------------------------- design-stage diagnostic
+#    design-stage diagnostic
 rows = []
 for sc in "AB":
     for p in policies:
@@ -131,7 +131,7 @@ t4.to_csv(f"{OUT}/table4_diagnostic.csv", index=False)
 Smean = {(sc, p): np.mean([rep[sc]["S"][p] for rep in reps], 0) for sc in "AB" for p in policies}
 np.save(f"{OUT}/S_mean.npy", {f"{k[0]}|{k[1]}": v for k, v in Smean.items()}, allow_pickle=True)
 
-# ================================================================= FIGURES
+#  FIGURES
 # Fig 3: Proposition 1 validation
 fig, ax = plt.subplots(1, 2, figsize=(7.2, 3.3))
 d = t2[t2.model != "Oracle"]

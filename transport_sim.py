@@ -1,4 +1,4 @@
-"""
+
 transport_sim.py
 
 Simulation study for
@@ -31,15 +31,15 @@ Candidate transport models (all fitted to the monitor data):
               neural operator), estimated by generalized ridge regression
 
 All code is numpy/scipy only.
-"""
+ 
 import numpy as np
 import scipy.sparse as sp
 import scipy.sparse.linalg as spla
 from scipy.optimize import least_squares
 
-# ----------------------------------------------------------------------------
+
 # Grid and PDE
-# ----------------------------------------------------------------------------
+  
 N = 32
 LDOM = 10.0
 H = LDOM / N
@@ -56,8 +56,8 @@ VEER = 0.6               # scenario B: wind veers by +/- VEER radians across y
 
 
 def build_L(K, lam, vx, vy):
-    """Sparse matrix of -K Lap c + v.grad c + lam c (first-order upwind
-    advection, zero Dirichlet boundary). vx, vy: scalars or (N, N) arrays."""
+     Sparse matrix of -K Lap c + v.grad c + lam c (first-order upwind
+    advection, zero Dirichlet boundary). vx, vy: scalars or (N, N) arrays. 
     vx = np.broadcast_to(np.asarray(vx, float), (N, N))
     vy = np.broadcast_to(np.asarray(vy, float), (N, N))
     diag = 4 * K / H**2 + lam + np.abs(vx) / H + np.abs(vy) / H
@@ -83,9 +83,9 @@ def build_L(K, lam, vx, vy):
                          shape=(N * N, N * N))
 
 
-# ----------------------------------------------------------------------------
+  
 # Geography (fixed across replicates) and policies
-# ----------------------------------------------------------------------------
+  
 def make_geography(seed=2024, J=36, n_mon=40, n_mon_train=30, n_rec=500):
     rng = np.random.default_rng(seed)
     interior = _IDX[2:N - 2, 2:N - 2].ravel()
@@ -125,7 +125,7 @@ def draw_days(rng, geo, D=80, theta_bar=0.25, kappa=4.0, lsd=0.3):
 
 
 def _rhs(geo, w):
-    """Point-source density on the grid for facility weights w (J,)."""
+     Point-source density on the grid for facility weights w (J,). 
     q = np.zeros(N * N)
     q[geo["fac"]] = w / H**2
     return q
@@ -136,8 +136,8 @@ def _policy_weights(geo, s_t):
 
 
 def solve_days(geo, days, K, lam, ux, uy, extra_weights=True):
-    """For each day: baseline field (grid) and policy exposure fields.
-    ux, uy: (D,) station winds or (D, N, N) wind fields."""
+     For each day: baseline field (grid) and policy exposure fields.
+    ux, uy: (D,) station winds or (D, N, N) wind fields. 
     D = days["D"]
     base = np.empty((D, N * N))
     npol = len(geo["policies"])
@@ -170,30 +170,30 @@ def observe(rng, geo, base):
     return BACKGROUND + base[:, geo["mon"]] + rng.normal(0, SIGMA_OBS, base[:, geo["mon"]].shape)
 
 
-# ----------------------------------------------------------------------------
+  
 # Candidate transport models
-# ----------------------------------------------------------------------------
+  
 def _profile(f, y):
-    """OLS of y on [1, f]; returns (b, gamma, residual)."""
+     OLS of y on [1, f]; returns (b, gamma, residual). 
     X = np.column_stack([np.ones_like(f), f])
     coef, *_ = np.linalg.lstsq(X, y, rcond=None)
     return coef[0], coef[1], y - X @ coef
 
 
 class PDEModel:
-    """advect=True: AD-PDE; advect=False: D-PDE (no advection). Parameters are
+     advect=True: AD-PDE; advect=False: D-PDE (no advection). Parameters are
     shape parameters (see _fields); gamma (emission-to-concentration scale) and
-    the background b are profiled out by least squares."""
+    the background b are profiled out by least squares. 
 
     def __init__(self, advect):
         self.advect = advect
         self.name = "AD-PDE" if advect else "D-PDE"
 
     def _fields(self, phi, geo, days, policies=False):
-        """Scale-free parameterization: dividing the PDE by lam gives
+         Scale-free parameterization: dividing the PDE by lam gives
         -ell^2 Lap c + (alpha/lam) v.grad c + c = q/lam; the overall scale 1/lam
         is absorbed by the profiled multiplier gamma. phi = (log ell^2, log alpha/lam)
-        for AD-PDE and phi = (log ell^2,) for D-PDE."""
+        for AD-PDE and phi = (log ell^2,) for D-PDE. 
         K = np.exp(phi[0])
         if self.advect:
             a = np.exp(phi[1])
@@ -256,8 +256,8 @@ class PDEModel:
         return e, pred
 
     def draws(self, geo, days, y, train_days, S, rng):
-        """Approximate posterior draws of (phi, b, gamma) from the joint
-        Gauss-Newton normal approximation (within-model uncertainty)."""
+         Approximate posterior draws of (phi, b, gamma) from the joint
+        Gauss-Newton normal approximation (within-model uncertainty). 
         th0 = np.concatenate([self.phi, [self.b, self.gamma]])
         out = []
         for th in rng.multivariate_normal(th0, self.cov_full, S):
@@ -268,7 +268,7 @@ class PDEModel:
 
 
 class KernelModel:
-    """c_t(x) = b + gamma * sum_j s_jt exp(-|x - x_j| / ell)."""
+     c_t(x) = b + gamma * sum_j s_jt exp(-|x - x_j| / ell). 
     name = "Kernel"
 
     def _basis(self, ell, xy, fxy, s):
@@ -313,7 +313,7 @@ class KernelModel:
 
 
 class SpectralOperator:
-    """Learned spectral operator (LSO).
+     Learned spectral operator (LSO).
 
     c_t(x) = b + sum_j s_jt G(x - x_j; u_t),
     G(r; u) = sum_{k in K} sum_{p in {1, u_x, u_y}} u_p [a_kp cos(k.r) + b_kp sin(k.r)],
@@ -322,7 +322,7 @@ class SpectralOperator:
     spectral-convolution layer of a Fourier neural operator conditioned on
     wind; coefficients are estimated by generalized ridge regression with a
     roughness penalty and GCV-selected penalty level.
-    """
+     
     name = "LSO"
 
     def __init__(self, kmax=8, period=2 * LDOM, k0=1.0):
@@ -341,7 +341,7 @@ class SpectralOperator:
         self.pen = wfull[self.keep_cols]
 
     def _features(self, xy, fxy, W, ux, uy):
-        """xy (n,2), W (D,J) facility weights, ux/uy (D,). Returns (D, n, p)."""
+         xy (n,2), W (D,J) facility weights, ux/uy (D,). Returns (D, n, p). 
         ph_f = fxy @ self.kv.T                      # (J, nk)
         Cf, Sf = W @ np.cos(ph_f), W @ np.sin(ph_f)  # (D, nk)
         ph_x = xy @ self.kv.T                       # (n, nk)
@@ -383,7 +383,7 @@ class SpectralOperator:
         return self
 
     def _features_mean(self, xy, fxy, W, ux, uy):
-        """Day-averaged features (n, p) without materializing (D, n, p)."""
+         Day-averaged features (n, p) without materializing (D, n, p). 
         ph_f = fxy @ self.kv.T
         Cf, Sf = W @ np.cos(ph_f), W @ np.sin(ph_f)            # (D, nk)
         U = np.stack([np.ones_like(ux), ux, uy], 1)             # (D, 3)
@@ -413,9 +413,9 @@ class SpectralOperator:
         return [{p: F_ @ th for p, F_ in Fe.items()} for th in Th]
 
 
-# ----------------------------------------------------------------------------
+  
 # Outcome analysis
-# ----------------------------------------------------------------------------
+  
 BETA, BETA_X = 2.0, 0.5
 SIGMA_H = 0.30   # outcome noise SD (oracle SE of beta about 0.03-0.11 across policies)
 
@@ -426,7 +426,7 @@ def residualizer(Z):
 
 
 def ols_beta(Mfun, e, Hmat):
-    """Regress each row of Hmat (R, n) on [Z, e]; return beta_hat, SE (R,)."""
+     Regress each row of Hmat (R, n) on [Z, e]; return beta_hat, SE (R,). 
     me = Mfun(e)
     denom = me @ me
     MH = Mfun(Hmat.T).T                      # (R, n)

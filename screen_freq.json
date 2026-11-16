@@ -1,0 +1,50 @@
+{
+ "A|Regional": {
+  "AD-PDE": 1.0,
+  "D-PDE": 0.0,
+  "Kernel": 0.0,
+  "LSO": 0.6
+ },
+ "A|Point source": {
+  "AD-PDE": 1.0,
+  "D-PDE": 0.0,
+  "Kernel": 0.0,
+  "LSO": 0.6
+ },
+ "A|Upwind": {
+  "AD-PDE": 1.0,
+  "D-PDE": 0.0,
+  "Kernel": 0.0,
+  "LSO": 0.6
+ },
+ "A|Downwind": {
+  "AD-PDE": 1.0,
+  "D-PDE": 0.0,
+  "Kernel": 0.0,
+  "LSO": 0.6
+ },
+ "B|Regional": {
+  "AD-PDE": 1.0,
+  "D-PDE": 0.0,
+  "Kernel": 0.0,
+  "LSO": 0.98
+ },
+ "B|Point source": {
+  "AD-PDE": 1.0,
+  "D-PDE": 0.0,
+  "Kernel": 0.0,
+  "LSO": 0.98
+ },
+ "B|Upwind": {
+  "AD-PDE": 1.0,
+  "D-PDE": 0.0,
+  "Kernel": 0.0,
+  "LSO": 0.98
+ },
+ "B|Downwind": {
+  "AD-PDE": 1.0,
+  "D-PDE": 0.0,
+  "Kernel": 0.0,
+  "LSO": 0.98
+ }
+}

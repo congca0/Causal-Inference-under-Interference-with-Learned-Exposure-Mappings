@@ -1,0 +1,57 @@
+scenario,policy,method,coverage,median_width
+A,Regional,Selected: plug-in,0.93095,0.30953762878867996
+A,Regional,Selected: within-model,0.9487,0.33402632009473443
+A,Regional,Equal-weight ensemble,1.0,3.4286860686173597
+A,Regional,Union (all candidates),0.97455,2.1106207159934787
+A,Regional,Union (screened),0.950475,0.41346871558627485
+A,Regional,Selected: delta=0.1,0.999975,0.7164028043425447
+A,Regional,Selected: delta=0.2,1.0,1.1546409758571534
+A,Point source,Selected: plug-in,0.9385,0.4544089466316701
+A,Point source,Selected: within-model,0.948275,0.4736338144936264
+A,Point source,Equal-weight ensemble,1.0,3.3574097171621107
+A,Point source,Union (all candidates),0.984125,2.3164314069528285
+A,Point source,Union (screened),0.9603,0.5906593201137632
+A,Point source,Selected: delta=0.1,0.9997,0.8620831378030656
+A,Point source,Selected: delta=0.2,1.0,1.304829046409453
+A,Upwind,Selected: plug-in,0.832675,0.1399177031609714
+A,Upwind,Selected: within-model,0.936375,0.19194911534953107
+A,Upwind,Equal-weight ensemble,1.0,1.6354873899469715
+A,Upwind,Union (all candidates),1.0,1.3877965198802948
+A,Upwind,Union (screened),0.884425,0.266381125076279
+A,Upwind,Selected: delta=0.1,1.0,0.5450618943537425
+A,Upwind,Selected: delta=0.2,1.0,0.9783943593545971
+A,Downwind,Selected: plug-in,0.90135,0.21090395424552266
+A,Downwind,Selected: within-model,0.94325,0.24641584812614337
+A,Downwind,Equal-weight ensemble,1.0,3.560299605584005
+A,Downwind,Union (all candidates),0.995325,2.0765911709962044
+A,Downwind,Union (screened),0.93785,0.3323342172178031
+A,Downwind,Selected: delta=0.1,1.0,0.6164376558203738
+A,Downwind,Selected: delta=0.2,1.0,1.0517918106615076
+B,Regional,Selected: plug-in,0.131025,0.3368622704143527
+B,Regional,Selected: within-model,0.180875,0.37745487505385267
+B,Regional,Equal-weight ensemble,1.0,4.6062226182448835
+B,Regional,Union (all candidates),0.4845,2.6361642432856716
+B,Regional,Union (screened),0.47265,0.5269807543409913
+B,Regional,Selected: delta=0.1,0.838875,0.7995440521425672
+B,Regional,Selected: delta=0.2,0.9989,1.2980627947463341
+B,Point source,Selected: plug-in,0.422125,0.49157497328168187
+B,Point source,Selected: within-model,0.468125,0.5246382360584736
+B,Point source,Equal-weight ensemble,1.0,4.264873035824538
+B,Point source,Union (all candidates),0.797475,2.798664852607846
+B,Point source,Union (screened),0.785275,0.7230100696481764
+B,Point source,Selected: delta=0.1,0.903125,0.9550469673708233
+B,Point source,Selected: delta=0.2,0.997025,1.4579615533905725
+B,Upwind,Selected: plug-in,0.159525,0.17803953144466877
+B,Upwind,Selected: within-model,0.310725,0.24683397209566815
+B,Upwind,Equal-weight ensemble,1.0,1.8730155997692637
+B,Upwind,Union (all candidates),0.961275,1.4861649800053836
+B,Upwind,Union (screened),0.887525,0.5063466906244382
+B,Upwind,Selected: delta=0.1,0.98605,0.6145514021497936
+B,Upwind,Selected: delta=0.2,1.0,1.0822849245843944
+B,Downwind,Selected: plug-in,0.089525,0.23145885878565897
+B,Downwind,Selected: within-model,0.159125,0.2869996764409244
+B,Downwind,Equal-weight ensemble,1.0,5.112847324437622
+B,Downwind,Union (all candidates),0.946325,2.736846839223147
+B,Downwind,Union (screened),0.926625,0.6285064838213549
+B,Downwind,Selected: delta=0.1,0.9173,0.6810342663173123
+B,Downwind,Selected: delta=0.2,0.99995,1.16362018356525

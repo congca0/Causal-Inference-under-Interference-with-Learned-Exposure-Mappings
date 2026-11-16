@@ -1,0 +1,26 @@
+{
+ "A|Regional": {
+  "AD-PDE": 1.0
+ },
+ "A|Point source": {
+  "AD-PDE": 1.0
+ },
+ "A|Upwind": {
+  "AD-PDE": 1.0
+ },
+ "A|Downwind": {
+  "AD-PDE": 1.0
+ },
+ "B|Regional": {
+  "AD-PDE": 1.0
+ },
+ "B|Point source": {
+  "AD-PDE": 1.0
+ },
+ "B|Upwind": {
+  "AD-PDE": 1.0
+ },
+ "B|Downwind": {
+  "AD-PDE": 1.0
+ }
+}

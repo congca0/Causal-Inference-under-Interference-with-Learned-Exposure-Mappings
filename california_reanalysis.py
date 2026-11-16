@@ -1,4 +1,4 @@
-"""
+
 california_reanalysis.py — empirical illustration for the revised manuscript.
 
 Run locally on the county-day panel used in the original analysis:
@@ -32,7 +32,7 @@ policy and the fitted transport specifications.
 
 Outputs: ca_out/prediction.csv, ca_out/diagnostics_<policy>.csv,
          ca_out/S_<policy>.csv, ca_out/fig_ca_S.png, ca_out/summary.txt
-"""
+ 
 import sys, os
 import numpy as np
 import pandas as pd
@@ -85,7 +85,7 @@ def haversine_matrix(lat, lon):
 
 
 def bearing_matrix(lat, lon):
-    """Bearing (radians, math convention: 0 = east, pi/2 = north) from j to i."""
+     Bearing (radians, math convention: 0 = east, pi/2 = north) from j to i. 
     la, lo = np.radians(lat), np.radians(lon)
     dx = (lo[:, None] - lo[None, :]) * np.cos((la[:, None] + la[None, :]) / 2)
     dy = la[:, None] - la[None, :]
@@ -117,7 +117,7 @@ GRIDS = {
 
 
 def design(panel, W, counties):
-    """Transport term sum_j W_ij PM_{j,t-1} for each county-day row."""
+     Transport term sum_j W_ij PM_{j,t-1} for each county-day row. 
     wide = panel.pivot_table(index="date", columns="county_name", values="pm25", aggfunc="mean")
     wide = wide.reindex(index=pd.date_range(wide.index.min(), wide.index.max(), freq="D"), columns=counties)
     lag = wide.shift(1)                                    # previous calendar day
@@ -129,7 +129,7 @@ def design(panel, W, counties):
 
 
 def fe_ols(df, y, xs, fe="county_name"):
-    """OLS with county fixed effects via within transformation."""
+     OLS with county fixed effects via within transformation. 
     d = df[[y, fe] + xs].dropna()
     g = d.groupby(fe)
     yc = d[y] - g[y].transform("mean")
@@ -264,7 +264,7 @@ def main(pm_file, coord_file, out="ca_out"):
 
 
 def write_fill(out, pm, panel0, pred, sel, tsi, ntreat, names):
-    """Values to paste into Section 6 and Tables 4-5 of the manuscript."""
+     Values to paste into Section 6 and Tables 4-5 of the manuscript. 
     f = lambda x, k=3: "—" if pd.isna(x) else f"{x:.{k}f}"
     L = ["# Values for Section 6", "",
          f"- Study period (raw panel): {pm.date.min():%B} {pm.date.min().day}, {pm.date.min().year} to {pm.date.max():%B} {pm.date.max().day}, {pm.date.max().year}",

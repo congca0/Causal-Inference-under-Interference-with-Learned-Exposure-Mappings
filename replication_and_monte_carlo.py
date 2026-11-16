@@ -1,4 +1,4 @@
-"""
+
 Replication + Monte Carlo check of the simulation in
 "Causal Inference with Interference under Exposure Mapping Uncertainty".
 
@@ -11,11 +11,11 @@ Spillover_identifiability_operator_learning .py), then:
      where M residualizes on (1, A).
   3. Shows that the reported 0.303-0.305 "intervention effects" follow from
      fixing beta at the truth with row-normalized operators.
-"""
+ 
 import numpy as np
 from scipy.spatial.distance import cdist
 
-# ---------------- original design (matches repo, seed 123) ----------------
+#   original design (matches repo, seed 123) 
 np.random.seed(123)
 n, b1, b2 = 500, 1.0, 2.0
 coords = np.random.uniform(0, 10, (n, 2))
@@ -58,7 +58,7 @@ print("Replication of Table 1 (single draw):")
 for k, T in models.items():
     print(f"  {k:6s} beta2_hat = {ols(np.column_stack([A, T @ A]), H)[2]:.3f}")
 
-# ---------------- Monte Carlo with common noise ----------------
+#   Monte Carlo with common noise  
 A_point = np.zeros(n)
 A_point[np.argmin(dist_c)] = 1
 A_strip = (coords[:, 0] < 3).astype(float)            # the paper's "upwind" policy
@@ -81,14 +81,14 @@ for pname, Ap in policies.items():
               f"95% MC range=({np.quantile(bh, .025):.2f}, {np.quantile(bh, .975):.2f})  "
               f"Prop.1 prediction={b2 * rho:.3f}")
 
-# ---------------- affine-invariance counterexample ----------------
+#   affine-invariance counterexample  
 Hs = b1 * A + b2 * E_true + rng.normal(0, 0.05, (R, n))
 Em = 0.8 * E_true
 X = np.column_stack([np.ones(n), A, Em])
 print(f"\nOperator 0.8*T_true: PM corr^2 = {np.corrcoef(PM, Em)[0, 1]**2:.3f} "
       f"(same as truth), beta2_hat = {(np.linalg.pinv(X) @ Hs.T)[2].mean():.3f}")
 
-# ---------------- why tau = 0.303-0.305 ----------------
+#   why tau = 0.303-0.305  
 r = np.random.default_rng(0)
 A1 = np.zeros(n)
 A1[r.choice(n, 50, replace=False)] = 1
